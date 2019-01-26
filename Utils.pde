@@ -72,3 +72,32 @@ void moveSquares(Face face, Boolean clockwise){
     face.squares = n;
   }
 }
+
+// UI
+
+color stageColor(int i){
+  if (i < current_stage){
+    return red;
+  }
+  else if (i == current_stage){
+    return yellow;
+  }
+  else{
+    return green;
+  }
+}
+
+Boolean equals(Cube a, Cube b){
+  for (int i = 0; i < 6; i++){
+    Face fa = a.getFace(i);
+    Face fb = b.getFace(i);
+    for (int y = 0; y < 3; y++){
+      for (int x = 0; x < 3; x++){
+        if (fa.squares[y][x] != fb.squares[y][x]){
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}

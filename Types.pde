@@ -55,6 +55,8 @@ class Face{
 }
 
 class Cube{
+  Boolean isAbstract;
+  Boolean solved;
   Face down, front, left, right, up, back;
   public Cube(){
     down = new Face(white);
@@ -63,11 +65,115 @@ class Cube{
     right = new Face(green);
     up = new Face(yellow);
     back = new Face(orange);
+    solved = true;
+  }
+  
+  public Boolean isSolved(){
+    for (int i = 0; i < 6; i++){
+      Face f = this.getFace(i);
+      color c = f.squares[0][0];
+      for (int yy = 0; yy < 3; yy++){
+        for (int xx = 0; xx < 3; xx++){
+          if (f.squares[yy][xx] != c){
+            this.solved = false;
+            return false;
+          }
+        }
+      }
+    }
+    this.solved = true;
+    return true;
+  }
+  
+  public Face getFace(int i){
+    switch (i){
+      case 0: return this.down;
+      case 1: return this.front;
+      case 2: return this.left;
+      case 3: return this.right;
+      case 4: return this.up;
+      case 5: return this.back;
+      default: println("Incorrect i at getFace");
+    }
+    return this.down;
+  }
+  
+  public Face getFace(String str){
+    switch (str){
+      case "down": return this.down;
+      case "front": return this.front;
+      case "left": return this.left;
+      case "right": return this.right;
+      case "up": return this.up;
+      case "back": return this.back;
+      default: println("Incorrect i at getFace");
+    }
+    return this.down;
+  }
+  
+  public void Rotate(char direction){
+    if (this.isAbstract){
+      real_rubik_queue.add(direction);
+    }
+    // North
+    if (direction == 'N'){
+      Face aux = this.front;
+      this.front = this.up;
+      
+      this.up = this.back;
+      moveSquares(this.up, true);
+      moveSquares(this.up, true);
+      
+      this.back = this.down;
+      moveSquares(this.back, true);
+      moveSquares(this.back, true);
+      
+      this.down = aux;
+      
+      moveSquares(this.left, true);
+      moveSquares(this.right, false);
+    }
+    else if (direction == 'E'){
+      Face aux = this.front;
+      this.front = this.right;
+      this.right = this.back;
+      this.back = this.left;
+      this.left = aux;
+      moveSquares(this.up, true);
+      moveSquares(this.down, false);
+    }
+    else if (direction == 'S'){
+      Face aux = this.front;
+      this.front = this.down;
+      this.down = this.back;
+      moveSquares(this.down, true);
+      moveSquares(this.down, true);
+      
+      this.back = this.up;
+      moveSquares(this.back, true);
+      moveSquares(this.back, true);
+      
+      this.up = aux;
+      moveSquares(this.left, false);
+      moveSquares(this.right, true);
+    }
+    else if (direction == 'W'){
+      Face aux = this.front;
+      this.front = this.left;
+      this.left = this.back;
+      this.back = this.right;
+      this.right = aux;
+      moveSquares(this.up, false);
+      moveSquares(this.down, true);
+    }
   }
   
   // lowercase = clockwise
   // uppercase = anti-clockwise
   public void Permute(char c){
+    if (this.isAbstract){
+      real_rubik_queue.add(c);
+    }
     // Upper clockwise
     if (c == 'u'){
       moveSquares(this.up, true);
@@ -139,6 +245,14 @@ class Cube{
       reverseY(0, down.squares);
       swapYtoX(2, 2, up.squares, left.squares);
       reverseY(2, up.squares);
+    }
+    else if (c == 'F'){
+      moveSquares(this.front, false);
+      swapYtoX(2, 2, up.squares, left.squares);
+      reverseX(2, left.squares);
+      swapY(2, 0, up.squares, down.squares);
+      swapYtoX(2, 0, up.squares, right.squares);
+      reverseX(0, right.squares);
     }
   }
 }
